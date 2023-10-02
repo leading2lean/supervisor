@@ -437,6 +437,8 @@ class ServerOptions(Options):
                  existing_dirpath, default="supervisord.pid")
         self.add("identifier", "supervisord.identifier", "i:", "identifier=",
                  str, default="supervisor")
+        self.add("proctitle", "supervisord.proctitle", "p:", "proctitle=",
+                 str, default="")
         self.add("childlogdir", "supervisord.childlogdir", "q:", "childlogdir=",
                  existing_directory, default=tempfile.gettempdir())
         self.add("minfds", "supervisord.minfds",
@@ -545,6 +547,8 @@ class ServerOptions(Options):
 
         self.identifier = section.identifier
 
+        self.proctitle = section.proctitle
+
     def process_config(self, do_usage=True):
         Options.process_config(self, do_usage=do_usage)
 
@@ -645,6 +649,7 @@ class ServerOptions(Options):
         section.loglevel = logging_level(get('loglevel', 'info'))
         section.pidfile = existing_dirpath(get('pidfile', 'supervisord.pid'))
         section.identifier = get('identifier', 'supervisor')
+        section.proctitle = get('proctitle', '')
         section.nodaemon = boolean(get('nodaemon', 'false'))
         section.silent = boolean(get('silent', 'false'))
 

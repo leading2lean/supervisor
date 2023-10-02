@@ -365,6 +365,17 @@ def main(args=None, test=False):
 
 def go(options): # pragma: no cover
     d = Supervisor(options)
+
+    # process optional setproctitle logic
+    if d.options.proctitle:
+        try:
+            from setproctitle import setproctitle
+
+            setproctitle(d.options.proctitle)
+
+        except ImportError:
+            pass
+
     try:
         d.main()
     except asyncore.ExitNow:
