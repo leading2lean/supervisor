@@ -1673,6 +1673,7 @@ class ClientOptions(Options):
         self.configroot.supervisorctl.username = None
         self.configroot.supervisorctl.password = None
         self.configroot.supervisorctl.history_file = None
+        self.configroot.supervisorctl.loglevel = 'warn'
 
         from supervisor.supervisorctl import DefaultControllerPlugin
         default_factory = ('default', DefaultControllerPlugin, {})
@@ -1688,6 +1689,8 @@ class ClientOptions(Options):
         self.add("username", "supervisorctl.username", "u:", "username=")
         self.add("password", "supervisorctl.password", "p:", "password=")
         self.add("history", "supervisorctl.history_file", "r:", "history_file=")
+        self.add("loglevel", "supervisorctl.loglevel", "e:", "loglevel=",
+                 logging_level, default="warn")
 
     def realize(self, *arg, **kw):
         Options.realize(self, *arg, **kw)
@@ -1695,7 +1698,7 @@ class ClientOptions(Options):
             self.interactive = 1
 
         format = '%(levelname)s: %(message)s\n'
-        logger = loggers.getLogger()
+        logger = loggers.getLogger(self.loglevel)
         loggers.handle_stdout(logger, format)
         self._log_parsing_messages(logger)
 
@@ -1749,6 +1752,8 @@ class ClientOptions(Options):
         else:
             section.history_file = None
             self.history_file = None
+
+        section.loglevel = logging_level(parser.getdefault('loglevel', section.loglevel))
 
         self.plugin_factories += self.get_plugins(
             parser,
